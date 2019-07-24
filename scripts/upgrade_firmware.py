@@ -398,8 +398,11 @@ try:
     hex_stream = load_hex("/tmp/firmware")
 except IOError:
     print "Unable to open file: ", "/tmp/firmware"
+    sys.exit(1)
 except InvalidFileException:
     print "File is not of the correct format"
+    sys.exit(1)
+
 print("Encryption:", hex_stream.is_encrypted())
 
 ser = serial.Serial(serial_port, 38400, timeout=1, bytesize=8,
@@ -416,6 +419,7 @@ silicon_id, silicon_rev, bootloader_version = send__enter_bootloader(ser)
 file_silicon_id, file_silicon_rev, file_checksum_type = read__header(hex_stream)
 if file_silicon_id != silicon_id:
     raise Exception("The silicon ids did not match " + cstr(file_silicon_id) + " != " + cstr(silicon_id))
+    
 if file_silicon_rev != silicon_rev:
     raise Exception("The silicon revs did not match")
 
